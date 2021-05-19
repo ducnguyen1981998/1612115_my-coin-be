@@ -9,6 +9,7 @@ import Header from '../components/SubComponents/Header';
 import CreateWallet from '../components/CreateWallet/CreateWallet';
 import AccessMyWallet from '../components/AccessMyWallet/AccessMyWallet';
 import Intro from '../components/Introdution/Intro';
+import Main from '../components/Dashboard/Main';
 
 export default function Navigation() {
     return (
@@ -24,7 +25,7 @@ export default function Navigation() {
             </Route>
             <Route path="/">
                 <Header/>
-                <AccessMyWallet/> 
+                <Main/> 
             </Route>
           </Switch>
         </div>
