@@ -11,6 +11,7 @@ const CreateWallet = () => {
     const [isToggleRandom, setIsToggleRandom] = useState(false);
     const [show, setShow] = useState(false);
 
+    //  Goi API tra ve mnemonic
     useEffect(() => {
         fetch('http://localhost:3001/api/login/mnemonic')
           .then(results => results.json())
@@ -18,7 +19,7 @@ const CreateWallet = () => {
             // console.log(data)
             setMnemonicWords(data.mnemonic)
             setIsToggleRandom(false)
-            console.log("useEffect", isToggleRandom);
+            // console.log("useEffect", isToggleRandom);
           });
       }, [isToggleRandom]); // Pass empty array to only run once on mount.
     
@@ -35,10 +36,11 @@ const CreateWallet = () => {
     //     )});
     // }
     
+    // Thay doi isToggleRandom de goi lai useEffect --> Call API
     const changeMnemonicWords = () =>{
         
         setIsToggleRandom(true)
-        console.log("changeMnemonicWords", isToggleRandom)
+        // console.log("changeMnemonicWords", isToggleRandom)
     }
     
 
@@ -103,14 +105,14 @@ const CreateWallet = () => {
                     </div>
                     <div>
                         <ul className="list-unstyled row d-flex justify-content-around px-3">
-                             { mnemonicWords &&
-                               mnemonicWords.map((word,index) =>{
-                                   return(
-                                    <li className="list-item col-3 border-bottom mx-3 py-2" key={index}>{index+1}. {word}</li>
-                                   )
-                               }) 
-                             
-                             }
+                            { mnemonicWords &&
+                            mnemonicWords.map((word,index) =>{
+                                return(
+                                <li className="list-item col-3 border-bottom mx-3 py-2" key={index}>{index+1}. {word}</li>
+                                )
+                            }) 
+                            
+                            }
                         </ul>
                     </div>
                     <button type="button" className="btn btn-secondary p-3 mb-5 w-75" data-toggle="modal" onClick={handleShow }>
@@ -123,19 +125,16 @@ const CreateWallet = () => {
                         <Modal.Title>Verification</Modal.Title>
                         </Modal.Header>
                         <Modal.Body>
-                            <ul className="list-unstyled row d-flex justify-content-around px-3">
-                                <li className="list-item col-3 border-bottom mx-3 py-2">Test</li>
-                                <li className="list-item col-3 border-bottom mx-3 py-2">Test</li>
-                                <li className="list-item col-3 border-bottom mx-3 py-2">Test</li>
-                                <li className="list-item col-3 border-bottom mx-3 py-2">Test</li>
-                                <li className="list-item col-3 border-bottom mx-3 py-2">Test</li>
-                                <li className="list-item col-3 border-bottom mx-3 py-2">Test</li>
-                                <li className="list-item col-3 border-bottom mx-3 py-2">Test</li>
-                                <li className="list-item col-3 border-bottom mx-3 py-2">Test</li>
-                                <li className="list-item col-3 border-bottom mx-3 py-2">Test</li>
-                                <li className="list-item col-3 border-bottom mx-3 py-2">Test</li>
-                                <li className="list-item col-3 border-bottom mx-3 py-2">Test</li>
-                                <li className="list-item col-3 border-bottom mx-3 py-2">Test</li>
+                            <ul className="list-unstyled row d-flex justify-content-around px-5">
+                                { 
+                                    mnemonicWords &&
+                                    mnemonicWords.map((word,index) =>{
+                                        return(
+                                            <li className="list-item col-3 border-bottom mx-3 py-3 w-100" key={index}>{index+1}. {word}</li>
+                                        )
+                                    }) 
+                                
+                                }
                             </ul>
                         </Modal.Body>
                         <Modal.Footer>
@@ -143,7 +142,7 @@ const CreateWallet = () => {
                             Close
                         </Button>
                         <Button variant="primary" onClick={handleClose}>
-                            Save Changes
+                            Verify
                         </Button>
                         </Modal.Footer>
                     </Modal>
