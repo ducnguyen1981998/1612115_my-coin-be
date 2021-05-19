@@ -88,6 +88,8 @@ router.get('/mnemonic', async(req, res) => {
     //Return Array
     const mnemonicArray = mnemonic.split(" "); 
 
+    // const obj = Object.fromEntries(Object.entries(mnemonicArray));
+
     //Get HdWallet
     var hdwallet = hdkey.fromMasterSeed(bip39.mnemonicToSeedSync(mnemonic));
     var path = "m/44'/60'/0'/0/0"; // Most commont path
@@ -95,12 +97,12 @@ router.get('/mnemonic', async(req, res) => {
     var wallet = hdwallet.derivePath(path).getWallet();
 
     var address = "0x" + wallet.getAddress().toString("hex");
-    console.log("adress: ", address);
+    // console.log("adress: ", address);
 
     var PriKey = "0x" + wallet.getPrivateKeyString();
-    console.log("PriKey: ", PriKey);
+    // console.log("PriKey: ", PriKey);
     var PublicKey = "0x" + wallet.getPublicKeyString();
-    console.log("PublicKey: ", PublicKey);
+    // console.log("PublicKey: ", PublicKey);
 
     res.json({
         mnemonic : mnemonicArray,
@@ -111,7 +113,10 @@ router.get('/mnemonic', async(req, res) => {
 });
 
 router.post('/confirmRegister', async(req, res) => {
+    console.log("ConfirmRegister")
     let payload = req.body;
+    console.log(payload);
+
     // payload ={
     //      address
     //      privateKey

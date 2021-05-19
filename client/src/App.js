@@ -13,8 +13,8 @@ function App() {
     <div className="App">
       <Header/>
       {/* <Intro/> */}
-      {/* <CreateWallet/> */}
-      <AccessMyWallet/>
+      <CreateWallet/>
+      {/* <AccessMyWallet/> */}
     </div>
   );
 }

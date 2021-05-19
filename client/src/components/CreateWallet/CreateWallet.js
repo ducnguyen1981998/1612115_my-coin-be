@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import '../../App.css';
 import { Button, Modal } from 'react-bootstrap';
 import axios from 'axios';
+import { json } from 'body-parser';
 
 
 
@@ -10,7 +11,9 @@ const CreateWallet = () => {
     const [mnemonicWords, setMnemonicWords] = useState([]);
     const [isToggleRandom, setIsToggleRandom] = useState(false);
     const [show, setShow] = useState(false);
-
+    const [showNoti, setShowNoti] = useState(false);
+    const [mnemonicWordsStr, setMnemonicWordsStr] = useState([]);
+    const [verifyMnemonic, setVerifyMnemonic] = useState(false);
     //  Goi API tra ve mnemonic
     useEffect(() => {
         fetch('http://localhost:3001/api/login/mnemonic')
@@ -21,20 +24,73 @@ const CreateWallet = () => {
             setIsToggleRandom(false)
             // console.log("useEffect", isToggleRandom);
           });
-      }, [isToggleRandom]); // Pass empty array to only run once on mount.
+      }, [isToggleRandom]);
+
+    // confirm Register
+    useEffect(() => {
+        if(verifyMnemonic){
+        fetch('http://localhost:3001/api/login/confirmRegister',{
+            method: 'POST',
+            headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({a: 1, b: 'Textual'})
+        })
+          .then(results => results.json())
+          .then(data => {
+            // console.log("running")
+            setMnemonicWords(data.mnemonic)
+            setIsToggleRandom(false)
+            // console.log("useEffect", isToggleRandom);
+          });
+        }
+      }, [verifyMnemonic]);  
     
 
-    // const mnemonicWords = 
     const handleClose = () => setShow(false);
-    const handleShow = () => setShow(true);
+    const handleCloseNoti = () => setShowNoti(false);
+    const handleShow = () => {
+        setShow(true);
+        let newArr = [1,1,1,1,1,1,1,1,1,1,1,1];
+        mnemonicWords.map((word, index) => {
+            if(word.includes("a"))
+            {
+                
+            }
+            else{
+                console.log("index: ",index);
+                console.log(mnemonicWordsStr.length);
+                newArr[index] = word;
+                setMnemonicWordsStr(newArr);
+            }
+        });
 
-    // let getMnemonicWordsFromAPI = (listWords) =>{
-    //     listWords.map(word=>{
-    //         return(
-    //         // <li className="list-item col-3 border-bottom mx-3 py-2" >{word}</li>
-    //         <p key={word}>{word}</p>
-    //     )});
-    // }
+    }
+    const handleVerify = () => {
+        setVerifyMnemonic(JSON.stringify(mnemonicWords) == JSON.stringify(mnemonicWordsStr));
+        setShow(false);
+        setShowNoti(true);
+        return verifyMnemonic;
+    };
+    const handleChange = (e, index) => {
+        // setMnemonicWordsStr(mnemonicWordsStr + e.target.value);
+        // console.log(e.target.value + index);
+        const newArr = [...mnemonicWordsStr];
+        newArr[index] = e.target.value;
+        setMnemonicWordsStr(newArr);
+        console.log(mnemonicWordsStr);
+    }
+
+    let getRandomMnemonicWords = (listWords) =>{
+        listWords.map((word, index) => {
+            return(
+            // <li className="list-item col-3 border-bottom mx-3 py-2" >{word}</li>
+            <p key={word}>{word}</p>
+        )});
+    }
+
+
     
     // Thay doi isToggleRandom de goi lai useEffect --> Call API
     const changeMnemonicWords = () =>{
@@ -120,33 +176,60 @@ const CreateWallet = () => {
                     </button>
 
                     {/* MyMnemonic */}
-                    <Modal show={show} onHide={handleClose} centered>
+                    <Modal show={show} onHide={handleClose} justify-content-center >
                         <Modal.Header closeButton>
-                        <Modal.Title>Verification</Modal.Title>
+                        <Modal.Title className="justify-content-center">Verification</Modal.Title>
                         </Modal.Header>
                         <Modal.Body>
                             <ul className="list-unstyled row d-flex justify-content-around px-5">
                                 { 
                                     mnemonicWords &&
                                     mnemonicWords.map((word,index) =>{
+                                        if(word.includes("a")){
+                                            return(
+                                                <input id={index} type="text" key={index} className="col-3 border-bottom mx-3" onChange={(e) => handleChange(e,index)} />
+                                            )
+                                        }
+                                        else{
+                                        {/* const newArr = [...mnemonicWordsStr];
+                                            newArr[index] = word;
+                                            setMnemonicWordsStr(newArr); */}
                                         return(
-                                            <li className="list-item col-3 border-bottom mx-3 py-3 w-100" key={index}>{index+1}. {word}</li>
-                                        )
+                                            <li id={index} className="list-item col-3 border-bottom mx-3" key={index}>{index+1}. {word}</li>
+                                        )}
                                     }) 
                                 
                                 }
                             </ul>
+                            <p></p>
                         </Modal.Body>
                         <Modal.Footer>
                         <Button variant="secondary" onClick={handleClose}>
                             Close
                         </Button>
-                        <Button variant="primary" onClick={handleClose}>
+                        <Button variant="primary" onClick={handleVerify}>
                             Verify
                         </Button>
                         </Modal.Footer>
                     </Modal>
 
+                    {/* Notifacation */}
+                    <Modal show={showNoti} onHide={handleCloseNoti} justify-content-center >
+                        <Modal.Header closeButton>
+                        <Modal.Title>{verifyMnemonic? "Success": "Error" }</Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body>
+                             <h2>{verifyMnemonic? "You have created account success!": "Mnemonic doesn't match! Please write it down correctly!" }</h2>   
+                        </Modal.Body>
+                        <Modal.Footer>
+                        <Button variant="secondary" onClick={handleCloseNoti}>
+                            Close
+                        </Button>
+                        <Button variant="primary" onClick={handleCloseNoti}>
+                            Verify
+                        </Button>
+                        </Modal.Footer>
+                    </Modal>
 
 
                     {/* End of register */}
