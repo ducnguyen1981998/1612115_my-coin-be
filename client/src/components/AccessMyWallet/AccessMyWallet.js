@@ -9,30 +9,82 @@ import document from '../../img/document.png';
 import code from '../../img/code.png';
 
 // Bootstrap
-import { Button, Modal } from 'react-bootstrap';
+import { Button, Modal, Table } from 'react-bootstrap';
 
 const AccessMyWallet = () => {
-
+    const [data, setData] = useState({});
+    const [message, setMessage] = useState("");
+    const [address, setAddress] = useState([]);
     const [mnemonicWords, setMnemonicWords] = useState([]);
+    const [mnemonicWordsStr, setMnemonicWordsStr] = useState([]);
     const [isToggleRandom, setIsToggleRandom] = useState(false);
-    const [show, setShow] = useState(false);  
+    const [show, setShow] = useState(false);
+    const [showNetWork, setshowNetWork] = useState(false);
+    const [checkLogin, setCheckLogin] = useState(false);  
+    const [selectedRow, setSelectedRow] = useState();
+    
+
+    //  Goi API tra ve mnemonic
+    useEffect(() => {
+        fetch('http://localhost:3001/api/login/mnemonic')
+          .then(results => results.json())
+          .then(data => {
+            setData(data);
+            setMnemonicWords(data.mnemonic)
+            setIsToggleRandom(false)
+            // console.log("useEffect", isToggleRandom);
+          });
+      }, [isToggleRandom]);
+
+    //  Goi API tra ve mnemonic
+    useEffect(() => {
+        if(checkLogin){
+            fetch('http://localhost:3001/api/login/loginMnemonic',{
+                method: 'POST',
+                headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    "mnemonicWords": mnemonicWordsStr
+                })
+            })
+            .then(results => results.json())
+            .then(data => {
+            console.log("data: ", data);
+            setMessage(data.message);
+            setAddress(data.address);
+            setCheckLogin(false);
+            });
+        }
+        }, [checkLogin]); 
+         
 
     // const mnemonicWords = 
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
 
-    let getMnemenicWordsFromClient = () =>{
-        var indents = [];
-        for(var i = 0; i<12; i++){
-        
-        indents.push(<input  type="text" 
-                    class="form-control" 
-                    placeholder={i+1}
-                    key={i} 
-                    class="col-xs-3 col-sm-3 col-md-3 col-lg-3 m-1"/>);   
-        }
-        return indents;
+    const handleChange = (e, i) => {
+        console.log(i)
+        const newArr = [...mnemonicWordsStr];
+        newArr[i] = e.target.value;
+        setMnemonicWordsStr(newArr);
+        console.log(mnemonicWordsStr);
+    };
+    const handleCheck = () => {
+        setCheckLogin(true);
+        setShow(false); //Close mnemonic
+        setshowNetWork(true);
     }
+    const handleShowNetWork = () => {
+        setShow(false); //Close mnemonic
+        setshowNetWork(true);
+    }
+    const handleCloseNetWork = () => {
+        // setShow(false); //Close mnemonic
+        setshowNetWork(false);
+    }
+
     
     // Thay doi isToggleRandom de goi lai useEffect --> Call API
     const changeMnemonicWords = () =>{
@@ -81,69 +133,61 @@ const AccessMyWallet = () => {
                                     mnemonicWords &&
                                     mnemonicWords.map((word,index) =>{
                                         return(
-                                            <li className="list-item col-3 border-bottom mx-3 py-3 w-100" key={index}>{index+1}. {word}</li>
+                                            <input  type="text" 
+                                                    class="form-control" 
+                                                    placeholder={index+1}
+                                                    key={index} 
+                                                    class="col-xs-3 col-sm-3 col-md-3 col-lg-3 m-1"
+                                                    onChange={ (e) => {
+                                                        handleChange(e, index)
+                                                    }}    
+                                                    />
                                         )
                                     }) 
-
-                                
                                 }
                             </ul>
-                            <div class="d-flex row justify-content-around">
-                                {
-                                    getMnemenicWordsFromClient()
-                                }
-                                {/* <input  type="text" 
-                                        class="form-control" 
-                                        placeholder="1" 
-                                        class="col-xs-3 col-sm-3 col-md-3 col-lg-3 mx-1"/>
-                                <input  type="text" 
-                                        class="form-control" 
-                                        placeholder="2" 
-                                        class="col-xs-3 col-sm-3 col-md-3 col-lg-3 mx-1"/>
-                                <input  type="text" 
-                                        class="form-control" 
-                                        placeholder="3" 
-                                        class="col-xs-3 col-sm-3 col-md-3 col-lg-3 mx-1"/>
-                                <input  type="text" 
-                                        class="form-control" 
-                                        placeholder="4" 
-                                        class="col-xs-3 col-sm-3 col-md-3 col-lg-3 mx-1"/>
-                                <input  type="text" 
-                                        class="form-control" 
-                                        placeholder="5" 
-                                        class="col-xs-3 col-sm-3 col-md-3 col-lg-3 mx-1"/>
-                                <input  type="text" 
-                                        class="form-control" 
-                                        placeholder="6" 
-                                        class="col-xs-3 col-sm-3 col-md-3 col-lg-3 mx-1"/>
-                                <input  type="text" 
-                                        class="form-control" 
-                                        placeholder="7" 
-                                        class="col-xs-3 col-sm-3 col-md-3 col-lg-3 mx-1"/>
-                                <input  type="text" 
-                                        class="form-control" 
-                                        placeholder="8" 
-                                        class="col-xs-3 col-sm-3 col-md-3 col-lg-3 mx-1"/>
-                                <input  type="text" 
-                                        class="form-control" 
-                                        placeholder="9" 
-                                        class="col-xs-3 col-sm-3 col-md-3 col-lg-3 mx-1"/>
-                                <input  type="text" 
-                                        class="form-control" 
-                                        placeholder="10" 
-                                        class="col-xs-3 col-sm-3 col-md-3 col-lg-3 mx-1"/>
-                                <input  type="text" 
-                                        class="form-control" 
-                                        placeholder="11" 
-                                        class="col-xs-3 col-sm-3 col-md-3 col-lg-3 mx-1"/>
-                                <input  type="text" 
-                                        class="form-control" 
-                                        placeholder="12" 
-                                        class="col-xs-3 col-sm-3 col-md-3 col-lg-3 mx-1"/> */}
-                            </div>
                         </Modal.Body>
                         <Modal.Footer>
-                        <Button variant="success" onClick={handleClose} class="w-100">
+                        <Button variant="success" onClick={handleCheck} class="w-100">
+                            Continue
+                        </Button>
+                        {/* <Button variant="primary" onClick={handleClose}>
+                            Verify
+                        </Button> */}
+                        </Modal.Footer>
+                    </Modal>
+
+                    {/* Hien thi address */}
+                     <Modal show={showNetWork} onHide={handleCloseNetWork} centered size="lg">
+                        <Modal.Header closeButton>
+                        <Modal.Title>Network And Address</Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body>
+                            <Table striped bordered hover variant="dark">
+                                <thead>
+                                    <tr>
+                                    <th>ID</th>
+                                    <th>Address</th>
+                                    <th>Balance</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                {
+                                    address && address.map((address, idx) => {
+                                        return(
+                                        <tr key={idx} style={ selectedRow === idx ? {backgroundColor: "lightblue"}:{}} onClick={() =>{ setSelectedRow(idx) }}>
+                                        <td>1</td>
+                                        <td>{address}</td>
+                                        <td>0.00</td>
+                                        </tr>
+                                        )
+                                    })
+                                }
+                                </tbody>
+                            </Table>
+                        </Modal.Body>
+                        <Modal.Footer>
+                        <Button variant="success" onClick={handleCheck} class="w-100">
                             Continue
                         </Button>
                         {/* <Button variant="primary" onClick={handleClose}>

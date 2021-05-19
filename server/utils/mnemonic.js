@@ -156,29 +156,32 @@ router.post('/confirmRegister', async(req, res) => {
 
 // Check mnemonic words with database
 router.post('/loginMnemonic', async(req, res) => {
-    let payload=req.body.Address;
+    let payload=req.body;
+    console.log("Mnemonic: ",payload.mnemonicWords )
     // let payload={
-    //      Mnemonic,
-    //      Address
+    //      Mnemonic
     // };
     MongoClient.connect(url, function (err, db) {
         if (err) throw err;
         let dbo = db.db("invitationsDB");
-        dbo.collection("account").find({Address: payload}).toArray(function (err, result) {
+        dbo.collection("account").find({"mnemonicWords": payload.mnemonicWords}).toArray(function (err, result) {
             if (err) throw err;
-            //
+            // console.log(result);
             if (result.length == 0)
             {
                 res.json({
                     message: "Login Failed"
                 })
+            }else{
+                res.json({
+                    message: "Success",
+                    address: [result[0].address]
+                })
             }
         }); 
     });
                     
-    res.json({
-        message: "Success",
-    })
+
 });
 
 

@@ -7,7 +7,7 @@ import { json } from 'body-parser';
 
 
 const CreateWallet = () => {
-
+    const [data, setData] = useState({});
     const [mnemonicWords, setMnemonicWords] = useState([]);
     const [isToggleRandom, setIsToggleRandom] = useState(false);
     const [show, setShow] = useState(false);
@@ -19,7 +19,7 @@ const CreateWallet = () => {
         fetch('http://localhost:3001/api/login/mnemonic')
           .then(results => results.json())
           .then(data => {
-            // console.log(data)
+            setData(data);
             setMnemonicWords(data.mnemonic)
             setIsToggleRandom(false)
             // console.log("useEffect", isToggleRandom);
@@ -35,7 +35,7 @@ const CreateWallet = () => {
             'Accept': 'application/json',
             'Content-Type': 'application/json'
             },
-            body: JSON.stringify({a: 1, b: 'Textual'})
+            body: JSON.stringify({"address": data.address, "privateKey": data.PriKey, "publicKey": data.PublicKey, "mnemonicWords": data.mnemonic})
         })
           .then(results => results.json())
           .then(data => {
@@ -222,11 +222,8 @@ const CreateWallet = () => {
                              <h2>{verifyMnemonic? "You have created account success!": "Mnemonic doesn't match! Please write it down correctly!" }</h2>   
                         </Modal.Body>
                         <Modal.Footer>
-                        <Button variant="secondary" onClick={handleCloseNoti}>
-                            Close
-                        </Button>
-                        <Button variant="primary" onClick={handleCloseNoti}>
-                            Verify
+                        <Button variant="primary" onClick={handleCloseNoti} to="/login">
+                            Go to Login 
                         </Button>
                         </Modal.Footer>
                     </Modal>
